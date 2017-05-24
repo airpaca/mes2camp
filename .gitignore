@@ -3,6 +3,9 @@ bin/
 bin-debug/
 bin-release/
 
+# Libraries
+.src/libs/
+
 # Other files and folders
 .settings/
 *.cfg
