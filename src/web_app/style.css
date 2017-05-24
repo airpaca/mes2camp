@@ -1,0 +1,163 @@
+/*html, body, #map  {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+*/
+
+html, body, #container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+body {
+  /* height of .navbar, customize with @navbar-height variable */
+  /*padding-top: 50px;*/
+}
+
+.img-titre{
+    margin-top: 5%;    
+    margin-left: 20%; 
+}
+
+#sidebar-left{
+  float: left;
+  height: 100%;
+  max-width: 100%;
+  width: 250px;    
+}
+
+#map {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+  height: 100%;
+  width: auto;
+}
+
+#popup{
+    font-family: Andale Mono,AndaleMono,monospace;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px;
+}
+ 
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.legend {
+    text-align: left;
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+.legend .colorcircle {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin-top: 0px;
+}
+
+
+.show-graph {
+    margin-top: 5%;
+    text-align: center;
+    font-size: 15px; 
+    font-style: bold;    
+}
+
+.glyphicon.glyphicon-stats {
+    font-size: 55px;
+}
+
+
+
+
+
+
+
+
+
+
+
+}
+#sidebar {
+  float: left;
+  height: 100%;
+  max-width: 100%;
+  width: 250px;
+}
+#map {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+  height: 100%;
+  width: auto;
+}
+.sidebar-wrapper {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+@media (max-width: 767px) {
+#sidebar {
+  display: none;
+}
+}
+
+.btn-group-vertical{
+	width: 250px;
+}
+
+h4 {
+    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+	font-size: 24px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 28px; 
+    text-align: center; 
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+h5 {
+    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+	font-size: 24px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 28px; 
+    text-align: center; 
+    margin-top: 20%;
+    margin-bottom: 20%;
+}
+
+.badge {
+    background-color: #398439;
+}
+
+.bottom_sidebar_button {
+    position: absolute;
+    display: inline-block;
+    bottom: 0;
+	width:250px;
+    text-align: center;
+    /*
+    background-color: #FF8800;
+    font-size: 14px;
+    color: #CC0000;
+    */
+}

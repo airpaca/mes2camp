@@ -1,0 +1,18 @@
+# JQuery 3.2.1
+libs/jquery/jquery-3.2.1.min.js    
+
+# Leaflet 3.2.1
+libs/leaflet/leaflet_v1.0.3/leaflet.js
+libs/leaflet/leaflet_v1.0.3/leaflet.css
+
+# Bootstrap
+libs/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css
+libs/bootstrap/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css
+libs/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js
+
+# Leaflet Sidebar
+libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.js
+libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.css
+
+# Chart.js
+https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js
