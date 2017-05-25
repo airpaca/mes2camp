@@ -3,18 +3,11 @@
 <head>
 
     <!-- 
-    NOTE: Bootstrap css à charger après leaflet?
     NOTE: Bon lien pour création légende et colorramp: 
           http://jsfiddle.net/nathansnider/oguh5t94/
-    NOTE: Donner des spécificités à chaque layer (bornes légende, poll, ...)
-          et avoir une fonction de création du layer qui les prends en compte.
-    NOTE: On peut modifier la clause WHERE et recharger la couche.
     NOTE: Pour le NO2 filtre sur val_memo, pour PM10 filtre sur station virtuelle/permanente
-    NOTE: Afficher les graphes à partir d'un btn dans popup.
     NOTE: Faire un code propre avec https://blog.webkid.io/rarely-used-leaflet-features/
-    TODO: Quand on sélectionne une campagne, zoomer sur les points
     TODO: Mettre une icone de chargement au début et au chargement de chaque couche.
-    TODO: Grossir le point en hover et l'entourer de jaune
     TODO: Faire les mesures PM10 (table différente de celle du NO2)
     -->
 
@@ -36,8 +29,8 @@
     <script src="libs/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
     <!-- Leaflet Sidebar -->
-    <script src="libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.js"></script>
-    <link rel="stylesheet" href="libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.css"/>    
+    <script src="libs/leaflet-sidebar-master/src/L.Control.Sidebar.js"></script>
+    <link rel="stylesheet" href="libs/leaflet-sidebar-master/src/L.Control.Sidebar.css"/>    
     
     <!-- Chart.js -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
@@ -49,7 +42,7 @@
     <link rel="stylesheet" href="style.css"/>
    
 </head>
-
+    
 <!------------------------------------------------------------------------------ 
                                     Body
 ------------------------------------------------------------------------------->
@@ -188,7 +181,7 @@ var yearlegend = L.control({position: 'bottomright'});
 Fonctions
 */
 
-$(function() /* Ecoute des actions de l'utilisateur */ {
+$(function() /* Ecoute des actions de l'utilisateur*/ {
     /*
     Fonction qui se déclanche lorsque l'on clique sur l'un des éléments listes
     */
@@ -229,7 +222,6 @@ $('.campagnes-select').change(function() /* Sélection liste déroulante campagn
     } else {
         update_layer(campagnes, "WHERE id_campagne = " + $(this).val());
     };
-    
 });
 
 function createMap(){
@@ -244,6 +236,11 @@ function createMap(){
         attribution: 'Fond de carte &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
     Hydda_Full.addTo(map);
+
+    // Prise en compte du click sur la carte 
+    map.on('click', function(e)  {   
+        sidebar.hide();
+    });
     
     return map;
 };
@@ -570,7 +567,7 @@ function response2json(response){
     return geojson;
 };
 
-function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter){
+function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter, zoomon=false){
     /*
     Récupère les données d'une couche PostGIS (attributs et geom) avec le script 
     script/get_postgis_layer.php.
@@ -590,6 +587,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
         dataType: 'json',
         beforeSend:function(jqXHR, settings){
             jqXHR.onMap = onMap;
+            jqXHR.zoomon = zoomon;
         },        
         success: function(response,textStatus,jqXHR){
          
@@ -629,7 +627,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                         };
                    } else if (layerName == "campagnes") {                       
                         var markerStyle = {
-                            fillColor: feature.properties.color, // "#585858",
+                            fillColor: feature.properties.color,
                             color: "#FFF",
                             fillOpacity: 0.7,
                             opacity: 1,
@@ -656,6 +654,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                 },
                 onEachFeature: function (feature, layer) {
                     
+                    // Ajout d'un popup
                     var html = '<div id="popup">';
                     for (prop in feature.properties) {
                         html += "<b>" + prop + ':</b> ' + feature.properties[prop]+"<br>";
@@ -668,14 +667,33 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                     
                     html += "</div>";
                     layer.bindPopup(html);
+
+                    // Prise en compte du hover
+                    layer.on('mouseover', function(){
+                        layer.setStyle({color: '#FFF', weight: 3});
+                    });
+                    layer.on('mouseout', function(){
+                        layer.setStyle({color: "#FFF",weight: 1});
+                    });
+
+                    // Prise en compte du cklic
+                    layer.on('click', function(){
+                        sidebar.hide();
+                    });                    
+
                 },
             });
             
-            // Si voulu, affichage sur la carte et création de la légende
+            // Si désiré affichage sur la carte et création de la légende
             if (jqXHR.onMap == true) {
                 my_layers[layerName].addTo(map);
                 generate_legend(layerName);
-            };  
+            }; 
+
+            // Si désiré zoom sur le layer
+            if (jqXHR.zoomon == true) {
+                map.fitBounds(my_layers[layerName].getBounds());
+            };
 
         },
         error: function (request, error) {
@@ -696,7 +714,7 @@ function update_layer(obj, where){
     
     // Suppression de l'ancient layer et création du nouveau
     map.removeLayer(my_layers[obj.layerName]);    
-    get_postgis_layer(obj.table, obj.geom, obj.srid, obj.fields, obj.where, obj.onMap, obj.layerName, obj.filter);  
+    get_postgis_layer(obj.table, obj.geom, obj.srid, obj.fields, obj.where, obj.onMap, obj.layerName, obj.filter, true);  
 };
 
 function populate_campagnes() {
@@ -734,6 +752,24 @@ function create_sidebar(){
         position: 'right',
         autoPan: true,
     });
+
+    // Modification de le fonction show de la sidebar.
+    sidebar.show = function () {
+        // RS ADD - Always Pan on show()
+        this._map.panBy([-this.getOffset() / 2, 0], {
+            duration: 0.5
+        });
+        // ---
+
+        if (!this.isVisible()) {
+            L.DomUtil.addClass(this._container, 'visible');
+            if (this.options.autoPan) {
+            }
+            this.fire('show');
+        }
+    };
+
+
     map.addControl(sidebar);
     sidebar.hide();
     
@@ -752,9 +788,6 @@ function graphiques(id_point, nom_polluant){
     } else if (nom_polluant == "PM2.5") {
         id_polluant = 3;
     };
-    
-    // Info
-    console.log("Graphiques ", id_point, nom_polluant, id_polluant);
 
      // Requête AJAX pour récupérer les mesures
     $.ajax({
@@ -776,8 +809,6 @@ function graphiques(id_point, nom_polluant){
                
             // Ne crée le graphique que si la requête a retournée un résultat
             if (typeof response[0] !== "undefined") {
-                   
-                console.log(response);
                 
                 var graph_labels = [];
                 for (var i in response) {
@@ -853,20 +884,13 @@ Appel des fonctions
 var map = createMap();
 var sidebar = create_sidebar();
 populate_campagnes();
-get_postgis_layer(no2.table, no2.geom, no2.srid, no2.fields, no2.where, no2.onMap, no2.layerName, no2.filter);
+get_postgis_layer(no2.table, no2.geom, no2.srid, no2.fields, no2.where, no2.onMap, no2.layerName, no2.filter, true);
 get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm10.onMap, pm10.layerName, pm10.filter);
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
 
 
-map.on('click', function(e)  {   
-    /* 
-    Prise en compte du click sur la carte 
-    TODO: Peut-on le mettre dans une fonction avant de créer map? Ou lors de la création de l'objet map
-    */
-	// Cache les affichages (graphs, ...) 
-    sidebar.hide();	
-});
+
 
 </script>
 
