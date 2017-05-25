@@ -16,7 +16,6 @@ $pg_pwd = '';
 $pg_db = 'campagne';
 ?>
 ```
-<<<<<<< HEAD
 
 ### Config with nginx
 
@@ -101,8 +100,6 @@ http {
 ```
 
 Reload nginx
-=======
->>>>>>> 4804c8e4fb181a7591503187f378789ea1a5ac50
 
 The web server needs CORS configuration.
 
