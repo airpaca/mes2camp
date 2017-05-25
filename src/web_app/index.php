@@ -7,7 +7,6 @@
           http://jsfiddle.net/nathansnider/oguh5t94/
     NOTE: Pour le NO2 filtre sur val_memo, pour PM10 filtre sur station virtuelle/permanente
     NOTE: Faire un code propre avec https://blog.webkid.io/rarely-used-leaflet-features/
-    TODO: Quand on sélectionne une campagne, zoomer sur les points
     TODO: Mettre une icone de chargement au début et au chargement de chaque couche.
     TODO: Faire les mesures PM10 (table différente de celle du NO2)
     -->
@@ -223,7 +222,6 @@ $('.campagnes-select').change(function() /* Sélection liste déroulante campagn
     } else {
         update_layer(campagnes, "WHERE id_campagne = " + $(this).val());
     };
-    
 });
 
 function createMap(){
@@ -569,7 +567,7 @@ function response2json(response){
     return geojson;
 };
 
-function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter){
+function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter, zoomon=false){
     /*
     Récupère les données d'une couche PostGIS (attributs et geom) avec le script 
     script/get_postgis_layer.php.
@@ -589,6 +587,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
         dataType: 'json',
         beforeSend:function(jqXHR, settings){
             jqXHR.onMap = onMap;
+            jqXHR.zoomon = zoomon;
         },        
         success: function(response,textStatus,jqXHR){
          
@@ -685,11 +684,16 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                 },
             });
             
-            // Si voulu, affichage sur la carte et création de la légende
+            // Si désiré affichage sur la carte et création de la légende
             if (jqXHR.onMap == true) {
                 my_layers[layerName].addTo(map);
                 generate_legend(layerName);
-            };  
+            }; 
+
+            // Si désiré zoom sur le layer
+            if (jqXHR.zoomon == true) {
+                map.fitBounds(my_layers[layerName].getBounds());
+            };
 
         },
         error: function (request, error) {
@@ -710,7 +714,7 @@ function update_layer(obj, where){
     
     // Suppression de l'ancient layer et création du nouveau
     map.removeLayer(my_layers[obj.layerName]);    
-    get_postgis_layer(obj.table, obj.geom, obj.srid, obj.fields, obj.where, obj.onMap, obj.layerName, obj.filter);  
+    get_postgis_layer(obj.table, obj.geom, obj.srid, obj.fields, obj.where, obj.onMap, obj.layerName, obj.filter, true);  
 };
 
 function populate_campagnes() {
@@ -880,7 +884,7 @@ Appel des fonctions
 var map = createMap();
 var sidebar = create_sidebar();
 populate_campagnes();
-get_postgis_layer(no2.table, no2.geom, no2.srid, no2.fields, no2.where, no2.onMap, no2.layerName, no2.filter);
+get_postgis_layer(no2.table, no2.geom, no2.srid, no2.fields, no2.where, no2.onMap, no2.layerName, no2.filter, true);
 get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm10.onMap, pm10.layerName, pm10.filter);
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
