@@ -6,14 +6,14 @@ Base de données qualité de l'air des campagnes de mesure.
 
 Install all required libs found in requirements.txt with the correct files path and names.
  
-Create the file ```src/web_app/scripts/config.php``` with the following code
+Create the file ```src/web_app/scripts/config.php``` with the following code and insert your credentials
 ```php
 <?php
 // Variables pour la connexion à PostgreSQL
 $pg_host = '';
 $pg_lgn = '';
 $pg_pwd = '';
-$pg_db = 'campagne';
+$pg_db = '';
 ?>
 ```
 
