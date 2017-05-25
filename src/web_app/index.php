@@ -34,10 +34,7 @@
     
     <!-- Chart.js -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
-    
-    <!-- Config -->
-    <script type="text/javascript" src="config.js"></script></script>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="style.css"/>
    
