@@ -34,10 +34,7 @@
     
     <!-- Chart.js -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
-    
-    <!-- Config -->
-    <script type="text/javascript" src="config.js"></script></script>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="style.css"/>
    
@@ -567,13 +564,19 @@ function response2json(response){
     return geojson;
 };
 
-function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter, zoomon=false){
+function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, filter, zoomon){
     /*
     Récupère les données d'une couche PostGIS (attributs et geom) avec le script 
     script/get_postgis_layer.php.
     Transforme la réponse en json avec la fonction response2json().
     Crée une couche de points.
     */
+
+    // IE & Safari doesn't like defaut values for function parameters
+    if(zoomon === undefined) {
+        zoomon = false;
+    };
+
     $.ajax({
         type: "GET",
         url: "scripts/get_postgis_layer.php",
