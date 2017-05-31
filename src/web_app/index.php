@@ -7,7 +7,6 @@
           http://jsfiddle.net/nathansnider/oguh5t94/
     NOTE: Pour le NO2 filtre sur val_memo, pour PM10 filtre sur station virtuelle/permanente
     NOTE: Faire un code propre avec https://blog.webkid.io/rarely-used-leaflet-features/
-    TODO: Mettre une icone de chargement au début et au chargement de chaque couche.
     TODO: Faire les mesures PM10 (table différente de celle du NO2)
     -->
 
@@ -31,7 +30,11 @@
     <!-- Leaflet Sidebar -->
     <script src="libs/leaflet-sidebar-master/src/L.Control.Sidebar.js"></script>
     <link rel="stylesheet" href="libs/leaflet-sidebar-master/src/L.Control.Sidebar.css"/>    
-    
+
+    <!-- Leaflet.Spin (including spin.js) -->
+    <script src="libs/spin.js/spin.min.js"></script>
+    <script src="libs/Leaflet.Spin-1.1.0/leaflet.spin.min.js"></script>
+
     <!-- Chart.js -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
@@ -577,6 +580,9 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
         zoomon = false;
     };
 
+    // Start loading bar
+    map.spin(true, {opacity: 0.25, width: 3, color: "#6E6E6E", speed: 1.5});
+
     $.ajax({
         type: "GET",
         url: "scripts/get_postgis_layer.php",
@@ -698,11 +704,17 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                 map.fitBounds(my_layers[layerName].getBounds());
             };
 
+            // Stop loading bar
+            map.spin(false);
+
         },
         error: function (request, error) {
             console.log(arguments);
             console.log("Ajax error: " + error);
             $("#error_tube").show();
+
+            // Stop loading bar
+            map.spin(false);
         },        
     });	
 };

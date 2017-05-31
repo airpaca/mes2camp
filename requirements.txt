@@ -1,5 +1,5 @@
 # JQuery 3.2.1
-libs/jquery/jquery-3.2.1.min.js    
+libs/jquery/jquery-3.2.1.min.js
 
 # Leaflet 3.2.1
 libs/leaflet/leaflet_v1.0.3/leaflet.js
@@ -13,6 +13,12 @@ libs/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js
 # Leaflet Sidebar
 libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.js
 libs/leaflet-sidebar-master/src/L.Control.Sidebar.modified.css
+
+# Leaflet Spin (including spin.js)
+# Leaflet.Spin: https://github.com/makinacorpus/Leaflet.Spin.git
+# Spin.js: http://spin.js.org/spin.min.js
+libs/spin.js/spin.min.js
+libs/Leaflet.Spin-1.1.0/leaflet.spin.min.js
 
 # Chart.js
 https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js
