@@ -107,6 +107,21 @@ Point to the following adress: http://www.[yourhost]/mes2camp/src/web_app
 
 ## Base de données tests 
 
+### Creating an empty test database
+
+- Create an empty database with PostGIS enabled
+- Restore the file src/database/campagne.sql using psql as it is plain sql:
+```bash
+psql -U [user] -d [database] < campagne.sql
+```
+- Insert values in tables
+ 
+### Exporting the database schema without data
+
+```bash
+pg_dump --host [host] --port 5432 --username "[user]" --role "postgres" --no-password  --format plain --no-owner --create --section pre-data --section post-data --encoding UTF8 --no-privileges --no-tablespaces --verbose --file "[...]/mes2camp/src/database/campagne.sql" --schema "mes" --schema "prod" "campagne"
+```
+
 ## API Reference
 
 ## Tests
