@@ -699,9 +699,11 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                 generate_legend(layerName);
             }; 
 
-            // Si désiré zoom sur le layer
+            // Si désiré zoom sur le layer (uniquement si on a ds bounds ok)
             if (jqXHR.zoomon == true) {
-                map.fitBounds(my_layers[layerName].getBounds());
+                if(Object.keys(my_layers[layerName].getBounds()).length == 2) {
+                    map.fitBounds(my_layers[layerName].getBounds());
+                };
             };
 
             // Stop loading bar
