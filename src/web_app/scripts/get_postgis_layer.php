@@ -22,7 +22,7 @@ if (!$conn) {
 }
 
 $sql = "
-select 
+select distinct 
 	" . $fields . ", 
 	ST_AsGeoJSON(st_transform(" . $geomfield . ", 4326)) as geom
 from " . $geotable . "  
