@@ -125,11 +125,11 @@ var no2 = {
 };
 
 var pm10 = {
-    table: "prod.pm10_p904_2016_v2017", 
+    table: "prod.pm10_p904_v2017",
     geom: "geom", 
     srid: "4326", 
     fields: "id_point, adresse, nom_polluant, valeur, an_mesure, nom_campagne, annee_campagne", 
-    where: "WHERE valeur >= 0", 
+    where: "WHERE valeur >= 0 AND an_mesure = 2016", 
     onMap: false, 
     layerName: "pm10", 
     filter: 99999,
@@ -142,11 +142,11 @@ var pm10 = {
 };
 
 var pm25 = {
-    table: "prod.pm25_ma_2016_v2017", 
+    table: "prod.pm25_ma_v2017",
     geom: "geom", 
     srid: "4326", 
     fields: "id_point, adresse, nom_polluant, an_mesure, valeur, nom_campagne, annee_campagne", 
-    where: "WHERE valeur >= 0", 
+    where: "WHERE valeur >= 0 AND an_mesure = 2016", 
     onMap: false, 
     layerName: "pm25", 
     filter: 99999,
@@ -670,7 +670,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                     };
                     
                     // Ajout du lien vers la fonction de graphiques + passage arguments 
-                    if (feature.properties["nom_polluant"] == "NO2"){
+                    if (['NO2', 'PM10', 'PM2.5'].indexOf(feature.properties["nom_polluant"]) >= 0) {
                         html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_polluant"] +'\')">Voir Toutes les mesures</a></div>';
                     };
                     
@@ -815,76 +815,215 @@ function graphiques(id_point, nom_polluant){
             id_polluant: id_polluant
         },
         dataType: 'json',
+        beforeSend:function(jqXHR, settings){
+            jqXHR.id_polluant = id_polluant;
+        },        
         error: function (request, error) {
             console.log(arguments);
             console.log("Ajax error: " + error);
         },       
         success: function(response,textStatus,jqXHR){  
-            
-            // Prépare le ou les élément(s) HTML du graph
-            sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Mesure</font><br><font color="orange">Régression Linéaire</font>');  
-               
+                           
             // Ne crée le graphique que si la requête a retournée un résultat
             if (typeof response[0] !== "undefined") {
                 
-                var graph_labels = [];
-                for (var i in response) {
-                    graph_labels.push(response[i].an);
-                };              
-            
-                var graph_title = 'Valeurs mesurées ou estimées';
-
-                var graph_data = [];
-                for (var i in response) {
-                    graph_data.push(response[i].val_carto);
-                };  
-                
-                var bg_colors = [];
-                var bd_colors = [];
-                for (var i in response) {
-                    if (response[i].val_memo == "reg lineaire") {
-                        bg_colors.push('rgba(255, 206, 86, 0.8)');
-                        bd_colors.push('rgba(255, 206, 86, 0.8)');
-                    } else {
-                        bg_colors.push('rgba(54, 162, 235, 0.8)');
-                        bd_colors.push('rgba(54, 162, 235, 0.8)');
-                    };
-                };  
-                
-                var ctx = document.getElementById("graph");
-                var graph_no2 = new Chart(ctx, {
-                    type: 'bar', // 'horizontalBar',          
-                    data: {
-                        labels: graph_labels,
-                        datasets: [{
-                            label: 'NO2',
-                            data: graph_data,
-                            backgroundColor: bg_colors,
-                            borderColor: bd_colors,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: false,
-                            fontSize: 20,
-                            text: graph_title
-                        },
-                        legend: {
-                            position: 'bottom',
-                            display: false,
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    // beginAtZero:true,
-                                    min:0,
-                                    max: 150,
-                                }
+                // Graphiques NO2
+                if (jqXHR.id_polluant == 1) {
+                    
+                    // Prépare le ou les élément(s) HTML du graph
+                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Mesure</font><br><font color="orange">Régression Linéaire</font>');                      
+                    
+                    var graph_labels = [];
+                    for (var i in response) {
+                        graph_labels.push(response[i].an);
+                    };              
+                    
+                    var graph_title = 'Valeurs mesurées ou estimées';
+                    
+                    var graph_data = [];
+                    for (var i in response) {
+                        graph_data.push(response[i].val_carto);
+                    };  
+                    
+                    var bg_colors = [];
+                    var bd_colors = [];
+                    for (var i in response) {
+                        if (response[i].val_memo == "reg lineaire") {
+                            bg_colors.push('rgba(255, 206, 86, 0.8)');
+                            bd_colors.push('rgba(255, 206, 86, 0.8)');
+                        } else {
+                            bg_colors.push('rgba(54, 162, 235, 0.8)');
+                            bd_colors.push('rgba(54, 162, 235, 0.8)');
+                        };
+                    };  
+                    
+                    var ctx = document.getElementById("graph");
+                    var graph_no2 = new Chart(ctx, {
+                        type: 'bar', // 'horizontalBar',          
+                        data: {
+                            labels: graph_labels,
+                            datasets: [{
+                                label: 'NO2',
+                                data: graph_data,
+                                backgroundColor: bg_colors,
+                                borderColor: bd_colors,
+                                borderWidth: 1
                             }]
+                        },
+                        options: {
+                            title: {
+                                display: false,
+                                fontSize: 20,
+                                text: graph_title
+                            },
+                            legend: {
+                                position: 'bottom',
+                                display: false,
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        // beginAtZero:true,
+                                        min:0,
+                                        max: 150,
+                                    }
+                                }]
+                            }
                         }
-                    }
-                });                 
+                    });
+                };
+
+                // Graphiques PM10
+                if (jqXHR.id_polluant == 2) {
+                    
+                    // Prépare le ou les élément(s) HTML du graph
+                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
+                                        
+                    var graph_labels = [];
+                    for (var i in response) {
+                        graph_labels.push(response[i].an_mesure);
+                    };              
+                    
+                    var graph_title = 'Sites permanents ou stations virtuelles';
+                    
+                    var graph_data = [];
+                    for (var i in response) {
+                        graph_data.push(response[i].valeur);
+                    };  
+                    
+                    var bg_colors = [];
+                    var bd_colors = [];
+                    for (var i in response) {
+                        if (response[i].nom_campagne == "Stations virtuelles") {
+                            bg_colors.push('rgba(255, 206, 86, 0.8)');
+                            bd_colors.push('rgba(255, 206, 86, 0.8)');
+                        } else {
+                            bg_colors.push('rgba(54, 162, 235, 0.8)');
+                            bd_colors.push('rgba(54, 162, 235, 0.8)');
+                        };
+                    };  
+                    
+                    var ctx = document.getElementById("graph");
+                    var graph_no2 = new Chart(ctx, {
+                        type: 'bar', // 'horizontalBar',          
+                        data: {
+                            labels: graph_labels,
+                            datasets: [{
+                                label: 'PM10µ',
+                                data: graph_data,
+                                backgroundColor: bg_colors,
+                                borderColor: bd_colors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            title: {
+                                display: false,
+                                fontSize: 20,
+                                text: graph_title
+                            },
+                            legend: {
+                                position: 'bottom',
+                                display: false,
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        // beginAtZero:true,
+                                        min:0,
+                                        max: 90,
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                };                
+
+                // Graphiques PM2.5
+                if (jqXHR.id_polluant == 3) {
+                    
+                    // Prépare le ou les élément(s) HTML du graph
+                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
+                                        
+                    var graph_labels = [];
+                    for (var i in response) {
+                        graph_labels.push(response[i].an_mesure);
+                    };              
+                    
+                    var graph_title = 'Sites permanents ou stations virtuelles';
+                    
+                    var graph_data = [];
+                    for (var i in response) {
+                        graph_data.push(response[i].valeur);
+                    };  
+                    
+                    var bg_colors = [];
+                    var bd_colors = [];
+                    for (var i in response) {
+                        if (response[i].nom_campagne == "Stations virtuelles") {
+                            bg_colors.push('rgba(255, 206, 86, 0.8)');
+                            bd_colors.push('rgba(255, 206, 86, 0.8)');
+                        } else {
+                            bg_colors.push('rgba(54, 162, 235, 0.8)');
+                            bd_colors.push('rgba(54, 162, 235, 0.8)');
+                        };
+                    };  
+                    
+                    var ctx = document.getElementById("graph");
+                    var graph_no2 = new Chart(ctx, {
+                        type: 'bar', // 'horizontalBar',          
+                        data: {
+                            labels: graph_labels,
+                            datasets: [{
+                                label: 'PM2.5µ',
+                                data: graph_data,
+                                backgroundColor: bg_colors,
+                                borderColor: bd_colors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            title: {
+                                display: false,
+                                fontSize: 20,
+                                text: graph_title
+                            },
+                            legend: {
+                                position: 'bottom',
+                                display: false,
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        // beginAtZero:true,
+                                        min:0,
+                                        max: 50,
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                }; 
                 
             };
     
