@@ -186,19 +186,26 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
     Fonction qui se déclanche lorsque l'on clique sur l'un des éléments listes
     */
     $('.list-group-item').click( function() {
-        
+
         // Gestion de l'affichage des listes
         $(this).addClass('active').siblings().removeClass('active');
         $("a .glyphicon-chevron-right").addClass('hide');		
         $("#" + $(this)[0].id + " .glyphicon-chevron-right").removeClass('hide');
 
         // Gestion de l'affichage des couches
-        for (alayer in my_layers) {        
-            if (!($(this)[0].id == alayer)){
+        for (alayer in my_layers) { 
+             
+            // console.log(alayer);
+            // console.log(my_layers[alayer].options.format);
+            // console.log($(this)[0].id);
+            
+        
+            if (!($(this)[0].id == alayer) && my_layers[alayer].options.format != "image/png"){    
                 map.removeLayer(my_layers[alayer]);
                 window[my_layers[alayer].options.name].onMap = false;
             };           
-        };		
+        };	
+        // console.log("BBBB");        
         my_layers[$(this)[0].id].addTo(map);
         window[my_layers[$(this)[0].id].options.name].onMap = true;
        
@@ -210,6 +217,18 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             $('.campagnes-select').removeClass("hidden");
         } else {  
             $('.campagnes-select').addClass("hidden");
+        };
+        
+        // Gestion des rasters
+        if (($(this)[0].id == "no2")){
+            map.removeLayer(my_layers["PM10_2016"]);     
+            my_layers["NO2_2016"].addTo(map);
+        } else if (($(this)[0].id == "pm10")){ 
+            map.removeLayer(my_layers["NO2_2016"]);     
+            my_layers["PM10_2016"].addTo(map);        
+        } else {
+            map.removeLayer(my_layers["NO2_2016"]);   
+            map.removeLayer(my_layers["PM10_2016"]);            
         };
         
     });
@@ -1034,6 +1053,41 @@ function graphiques(id_point, nom_polluant){
     }); 
 };    
 
+function get_raster_layers(){
+    /* 
+    Récupération des rasters de mod urbaine.
+    ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
+    */
+    var wms_address = "http://vmli-grass/cgi-bin/mapserv?map=/home/airpaca/previurb/modurb-annee.map"; // "/cgi-bin/mapserv?map=/home/airpaca/previurb/modurb-annee.map";
+    var wms_format = 'image/png';
+    var wms_tr = true;
+    var wms_attrib = "Air PACA";
+    var alpha_conc = 0.5; // opacity of concentration layers    
+    
+    my_layers["NO2_2016"] = L.tileLayer.wms(wms_address, {
+        name: 'NO2_2016',
+        layers: 'NO2_2016',
+        format: wms_format,
+        transparent: wms_tr,
+        opacity: alpha_conc,
+        dj: 0,
+        subtitle: "Moyenne annuelle NO<sub>2</sub> de l'ann&eacute;e 2016"
+    });
+    
+    my_layers["PM10_2016"] = L.tileLayer.wms(wms_address, {
+        name: 'PM10_2016',
+        layers: 'PM10_2016',
+        format: wms_format,
+        transparent: wms_tr,
+        opacity: alpha_conc,
+        dj: 0,
+        subtitle: "Percentile 90.4 PM10 de l'ann&eacute;e 2016"
+    });  
+
+    my_layers["NO2_2016"].addTo(map);        
+    
+};
+
 /*
 Appel des fonctions
 */
@@ -1044,8 +1098,7 @@ get_postgis_layer(no2.table, no2.geom, no2.srid, no2.fields, no2.where, no2.onMa
 get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm10.onMap, pm10.layerName, pm10.filter);
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
-
-
+get_raster_layers();
 
 
 </script>
