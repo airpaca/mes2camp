@@ -138,8 +138,19 @@ h5 {
 }
 
 .badge {
-    background-color: #398439;
+/*     background-color: #398439;
+    border: solid 3px #6E6E6E; */
+    background-color: rgb(255, 255, 255);
+    border: solid 3px rgb(57, 132, 57); /* border: solid 3px #6E6E6E; */
+    color:rgb(57, 132, 57);    
 }
+
+.list-group-item.active .badge {
+    background-color: rgb(255, 255, 255);
+    border: solid 3px rgb(57, 132, 57);
+    color:rgb(57, 132, 57);
+}
+
 
 .bottom_sidebar_button {
     position: absolute;

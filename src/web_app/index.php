@@ -59,25 +59,25 @@
             <a href="#" class="list-group-item active no2" id="no2">
             NO₂
             <span class="glyphicon glyphicon-chevron-right"></span>
-            <span class="badge">Ready</span>
+            <span class="badge" id="raster_no2">AZUR</span>
             </a>
 
             <a href="#" class="list-group-item pm10" id="pm10">
             PM10
             <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <span class="badge">Ready</span>
+            <span class="badge" id="raster_pm10">AZUR</span>
             </a>
 
             <a href="#" class="list-group-item pm25" id="pm25">
             PM2.5
             <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <span class="badge">Ready</span>
+            <!-- <span class="badge">Ready</span> -->
             </a>            
 
             <a href="#" class="list-group-item campagnes" id="campagnes">
             Campagnes
             <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <span class="badge">Ready</span>
+            <!-- <span class="badge">Ready</span> -->
             </a>  
             
             </a>
@@ -180,8 +180,8 @@ var yearlegend = L.control({position: 'bottomright'});
 /*
 Fonctions
 */
-
 $(function() /* Ecoute des actions de l'utilisateur*/ {
+    
     /*
     Fonction qui se déclanche lorsque l'on clique sur l'un des éléments listes
     */
@@ -219,19 +219,73 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             $('.campagnes-select').addClass("hidden");
         };
         
-        // Gestion des rasters
+        // Gestion des rasters en fonction de la couleur du badge
         if (($(this)[0].id == "no2")){
-            map.removeLayer(my_layers["PM10_2016"]);     
-            my_layers["NO2_2016"].addTo(map);
+            map.removeLayer(my_layers["PM10_2016"]); 
+            if ($(this).find(".badge").css("background-color") == 'rgb(255, 255, 255)') {
+                my_layers["NO2_2016"].addTo(map);
+            };
         } else if (($(this)[0].id == "pm10")){ 
-            map.removeLayer(my_layers["NO2_2016"]);     
-            my_layers["PM10_2016"].addTo(map);        
+            map.removeLayer(my_layers["NO2_2016"]); 
+            if ($(this).find(".badge").css("background-color") == 'rgb(255, 255, 255)') {
+                my_layers["PM10_2016"].addTo(map);        
+            };
         } else {
             map.removeLayer(my_layers["NO2_2016"]);   
             map.removeLayer(my_layers["PM10_2016"]);            
         };
         
     });
+   
+    /*
+    Fonction qui se déclanche lorsque l'utilisateur clique sur un badge
+    */
+    $(".badge").click(function() {
+        /*
+        Affichage ou désaffichage du raster en fonction du badge id et bgcolor
+        */
+        bg_color = $(this).css("background-color")
+        
+        if (bg_color == 'rgb(255, 255, 255)' || bg_color == 'rgb(57, 132, 57)') {
+        
+            // Is activé on désactive
+            
+            $(this).css('background-color','#BDBDBD');
+            $(this).css('color','#6E6E6E');
+            $(this).css('border','solid 3px #6E6E6E');
+            
+            if ($(this).attr("id") == "raster_no2"){
+                map.removeLayer(my_layers["NO2_2016"]);
+            } else {
+                map.removeLayer(my_layers["PM10_2016"]);
+            };
+        } else {
+            
+            // Is déactivé on active
+            
+            $(this).css('background-color','rgb(255, 255, 255)');
+            $(this).css('color','rgb(57, 132, 57)');
+            $(this).css('border','solid 3px rgb(57, 132, 57)');
+            
+            if ($(this).attr("id") == "raster_no2"){
+                my_layers["NO2_2016"].addTo(map);
+            } else {
+                my_layers["PM10_2016"].addTo(map);
+            };        
+        };    
+    });
+    
+    /*
+    Fonction qui se déclanche lorsque l'utilisateur hover un badge
+    */
+    $(".badge").hover(
+        function() {
+            $(this).css('border','solid 2px black');
+        }, function() {
+            $(this).css('border','solid 3px rgb(57, 132, 57)');
+        }
+    );
+        
 });	
 
 $('.campagnes-select').change(function() /* Sélection liste déroulante campagnes */ {
@@ -1084,8 +1138,7 @@ function get_raster_layers(){
         subtitle: "Percentile 90.4 PM10 de l'ann&eacute;e 2016"
     });  
 
-    my_layers["NO2_2016"].addTo(map);        
-    
+    my_layers["NO2_2016"].addTo(map);   
 };
 
 /*
@@ -1099,7 +1152,6 @@ get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm1
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
 get_raster_layers();
-
 
 </script>
 
