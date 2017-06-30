@@ -10,6 +10,10 @@ src/web_app/libs/
 .settings/
 *.cfg
 config*
+*.map
+
+# Rasters
+src/web_app/rasters/
 
 # Swap files
 *.swp
