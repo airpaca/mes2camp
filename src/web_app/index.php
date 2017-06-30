@@ -1112,7 +1112,7 @@ function get_raster_layers(){
     Récupération des rasters de mod urbaine.
     ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
     */
-    var wms_address = "http://vmli-grass/cgi-bin/mapserv?map=/home/airpaca/previurb/modurb-annee.map"; // "/cgi-bin/mapserv?map=/home/airpaca/previurb/modurb-annee.map";
+    var wms_address = "http://172.16.13.182/cgi-bin/mapserv?map=/home/airpaca/web/mes2camp.dev/mes2camp/src/web_app/serveur_airpaca.map" //
     var wms_format = 'image/png';
     var wms_tr = true;
     var wms_attrib = "Air PACA";
