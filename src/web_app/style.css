@@ -137,11 +137,9 @@ h5 {
     margin-bottom: 20%;
 }
 
-.badge {
-/*     background-color: #398439;
-    border: solid 3px #6E6E6E; */
+/* .badge {
     background-color: rgb(255, 255, 255);
-    border: solid 3px rgb(57, 132, 57); /* border: solid 3px #6E6E6E; */
+    border: solid 3px rgb(57, 132, 57); 
     color:rgb(57, 132, 57);    
 }
 
@@ -149,7 +147,25 @@ h5 {
     background-color: rgb(255, 255, 255);
     border: solid 3px rgb(57, 132, 57);
     color:rgb(57, 132, 57);
+} */
+
+.badge {
+    background-color: #FAB007;
+    border: solid 0px rgb(57, 132, 57); /* border: solid 3px #6E6E6E; */
+    color: black;    
+    font-weight: 400;
+    padding: 4px 8px;
 }
+
+.list-group-item.active .badge {
+    background-color: #FAB007;
+    border: solid 0px rgb(57, 132, 57); /* border: solid 3px #6E6E6E; */
+    color: black;    
+    font-weight: 400;
+    padding: 4px 8px;
+}
+
+
 
 
 .bottom_sidebar_button {
