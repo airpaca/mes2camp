@@ -246,13 +246,11 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
         */
         bg_color = $(this).css("background-color")
         
-        if (bg_color == 'rgb(255, 255, 255)' || bg_color == 'rgb(57, 132, 57)') {
-        
+        if (bg_color == 'rgb(250, 176, 7)' || bg_color == 'rgb(243, 213, 144)') {
+            
             // Is activé on désactive
             
             $(this).css('background-color','#BDBDBD');
-            $(this).css('color','#6E6E6E');
-            $(this).css('border','solid 3px #6E6E6E');
             
             if ($(this).attr("id") == "raster_no2"){
                 map.removeLayer(my_layers["NO2_2016"]);
@@ -263,9 +261,7 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             
             // Is déactivé on active
             
-            $(this).css('background-color','rgb(255, 255, 255)');
-            $(this).css('color','rgb(57, 132, 57)');
-            $(this).css('border','solid 3px rgb(57, 132, 57)');
+            $(this).css('background-color','rgb(250, 176, 7)');
             
             if ($(this).attr("id") == "raster_no2"){
                 my_layers["NO2_2016"].addTo(map);
@@ -280,9 +276,17 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
     */
     $(".badge").hover(
         function() {
-            $(this).css('border','solid 2px black');
+            if ($(this).css("background-color") == 'rgb(189, 189, 189)'){
+                $(this).css('background-color','#e0e0e0');
+            } else {
+                $(this).css('background-color','#f3d590');
+            };                        
         }, function() {
-            $(this).css('border','solid 3px rgb(57, 132, 57)');
+            if ($(this).css("background-color") == 'rgb(189, 189, 189)' || $(this).css("background-color") == 'rgb(224, 224, 224)'){
+                $(this).css('background-color','#BDBDBD');
+            } else {
+                $(this).css('background-color','#FAB007');
+            };
         }
     );
         
