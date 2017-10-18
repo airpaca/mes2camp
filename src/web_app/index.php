@@ -108,10 +108,11 @@ Variables générales
 var my_layers = {};
 
 var no2 = {
+    id_compose: 189,
     table: "prod.no2_ma_2016_v2017", 
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_polluant, an, valeur, val_memo, an_source", 
+    fields: "id_point, adresse, nom_compose, an, valeur, val_memo, an_source", 
     where: "WHERE valeur >= 0", 
     onMap: true, 
     layerName: "no2", 
@@ -125,10 +126,11 @@ var no2 = {
 };
 
 var pm10 = {
+    id_compose: 125,
     table: "prod.pm10_p904_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_polluant, valeur, an_mesure, nom_campagne, annee_campagne", 
+    fields: "id_point, adresse, nom_compose, valeur, an_mesure, nom_campagne, annee_campagne", 
     where: "WHERE valeur >= 0 AND an_mesure = 2016", 
     onMap: false, 
     layerName: "pm10", 
@@ -142,10 +144,11 @@ var pm10 = {
 };
 
 var pm25 = {
+    id_compose: 270,
     table: "prod.pm25_ma_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_polluant, an_mesure, valeur, nom_campagne, annee_campagne", 
+    fields: "id_point, adresse, nom_compose, an_mesure, valeur, nom_campagne, annee_campagne", 
     where: "WHERE valeur >= 0 AND an_mesure = 2016", 
     onMap: false, 
     layerName: "pm25", 
@@ -745,10 +748,10 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                     for (prop in feature.properties) {
                         html += "<b>" + prop + ':</b> ' + feature.properties[prop]+"<br>";
                     };
-                    
+
                     // Ajout du lien vers la fonction de graphiques + passage arguments 
-                    if (['NO2', 'PM10', 'PM2.5'].indexOf(feature.properties["nom_polluant"]) >= 0) {
-                        html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_polluant"] +'\')">Voir Toutes les mesures</a></div>';
+                    if (['NO2', 'PM10 corrige', 'PM2.5 corrige'].indexOf(feature.properties["nom_compose"]) >= 0) {
+                        html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_compose"] +'\')">Voir Toutes les mesures</a></div>';
                     };
                     
                     html += "</div>";
@@ -873,14 +876,14 @@ function create_sidebar(){
 function graphiques(id_point, nom_polluant){
     
     sidebar.hide();
-    
+
     // Définition de l'id_polluant en fonction de son nom
-    if (nom_polluant == "NO2"){
-        id_polluant = 1;
-    } else if (nom_polluant == "PM10") {
-        id_polluant = 2;
-    } else if (nom_polluant == "PM2.5") {
-        id_polluant = 3;
+    if (nom_polluant == 'NO2'){
+        id_polluant = no2.id_compose;
+    } else if (nom_polluant == 'PM10 corrige') {
+        id_polluant = pm10.id_compose;
+    } else if (nom_polluant == 'PM2.5 corrige') {
+        id_polluant = pm25.id_compose;
     };
 
      // Requête AJAX pour récupérer les mesures
@@ -900,12 +903,12 @@ function graphiques(id_point, nom_polluant){
             console.log("Ajax error: " + error);
         },       
         success: function(response,textStatus,jqXHR){  
-                           
+                          
             // Ne crée le graphique que si la requête a retournée un résultat
             if (typeof response[0] !== "undefined") {
                 
                 // Graphiques NO2
-                if (jqXHR.id_polluant == 1) {
+                if (jqXHR.id_polluant == no2.id_compose) {
                     
                     // Prépare le ou les élément(s) HTML du graph
                     sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Mesure</font><br><font color="orange">Régression Linéaire</font>');                      
@@ -971,7 +974,7 @@ function graphiques(id_point, nom_polluant){
                 };
 
                 // Graphiques PM10
-                if (jqXHR.id_polluant == 2) {
+                if (jqXHR.id_polluant == pm10.id_compose) {
                     
                     // Prépare le ou les élément(s) HTML du graph
                     sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
@@ -1037,7 +1040,7 @@ function graphiques(id_point, nom_polluant){
                 };                
 
                 // Graphiques PM2.5
-                if (jqXHR.id_polluant == 3) {
+                if (jqXHR.id_polluant == pm25.id_compose) {
                     
                     // Prépare le ou les élément(s) HTML du graph
                     sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
@@ -1102,6 +1105,8 @@ function graphiques(id_point, nom_polluant){
                     });
                 }; 
                 
+            } else {
+                console.log("Aucun résultat renvoyé");
             };
     
             // Affiche la sidebar et le graphique qu'elle contient
@@ -1156,7 +1161,6 @@ get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm1
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
 get_raster_layers();
-
 </script>
 
 </body>
