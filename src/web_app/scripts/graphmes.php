@@ -19,38 +19,38 @@ if (!$conn) {
 }
 
 /* Requête SQL selon le polluant */
-if ($id_polluant == 1) {
+if ($id_polluant == 189) {
     $sql = "
-    select id_point, id_polluant, an, val_carto::int, val_memo
+    select id_point, id_compose, an, val_carto::int, val_memo
     from prod.mes_red 
-    where id_point = " . $id_point . " and id_polluant = " . $id_polluant . " and id_indicateur = 1
-    order by id_point, id_polluant, an, val_carto, val_memo
+    where id_point = " . $id_point . " and id_compose = " . $id_polluant . " and id_indicateur = 1
+    order by id_point, id_compose, an, val_carto, val_memo
     ;
     ";
-} elseif ($id_polluant == 2) {
+} elseif ($id_polluant == 125) {
     $sql = "   
     select 
-        id_point, nom_polluant, an_mesure, valeur::int, 
+        id_point, nom_compose, an_mesure, valeur::int, 
         case when 
             nom_campagne in ('UNIPER', 'Monaco stations') then 'Sites permanents' 
             else nom_campagne 
         end as nom_campagne    
     from prod.pm10_p904_v2017
     where id_point = " . $id_point . "
-    order by id_point, nom_polluant, an_mesure, nom_campagne
+    order by id_point, nom_compose, an_mesure, nom_campagne
     ;    
     "; 
-} elseif ($id_polluant == 3) {
+} elseif ($id_polluant == 270) {
     $sql = "   
     select 
-        id_point, nom_polluant, an_mesure, valeur::int, 
+        id_point, nom_compose, an_mesure, valeur::int, 
         case when 
             nom_campagne in ('UNIPER', 'Monaco stations') then 'Sites permanents' 
             else nom_campagne 
         end as nom_campagne    
     from prod.pm25_ma_v2017
     where id_point = " . $id_point . "
-    order by id_point, nom_polluant, an_mesure, nom_campagne
+    order by id_point, nom_compose, an_mesure, nom_campagne
     ;    
     ";     
 }
