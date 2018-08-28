@@ -1,11 +1,11 @@
 <?php 
 
 /* Chargement du fichier de config en fonction de l'utilisateur */
-if ($user == "admin") {
-    include 'config_su.php';
-} else {
+// if ($user == "admin") {
+    // include 'config_su.php';
+// } else {
     include 'config.php';
-}
+// }
 
 /* Connexion à PostgreSQL */
 $conn = pg_connect("dbname='campagne' user='" . $pg_lgn . "' password='" . $pg_pwd . "' host='" . $pg_host . "'");
@@ -14,9 +14,11 @@ if (!$conn) {
     exit;
 }
 
+// Récup des campagnes avec suppression MC
 $sql = "
 select distinct id_campagne, nom_campagne, color
 from prod.campagne 
+where id_campagne <> 36 
 union all
 select 0, '*', null 
 order by nom_campagne;

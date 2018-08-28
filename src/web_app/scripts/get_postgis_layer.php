@@ -8,11 +8,11 @@ $srid = $_GET['srid'];
 $where = $_GET['where'];
 
 /* Chargement du fichier de config en fonction de l'utilisateur */
-if ($user == "admin") {
-    include 'config_su.php';
-} else {
+// if ($user == "admin") {
+    // include 'config_su.php';
+// } else {
     include 'config.php';
-}
+// }
 
 /* Connexion à PostgreSQL */
 $conn = pg_connect("dbname='campagne' user='" . $pg_lgn . "' password='" . $pg_pwd . "' host='" . $pg_host . "'");

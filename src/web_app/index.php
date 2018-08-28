@@ -13,7 +13,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>mes2camp</title>
+    <title>Campagnes</title>
     
     <!-- JQuery 3.2.1 -->
     <script src="libs/jquery/jquery-3.2.1.min.js"></script>    
@@ -35,9 +35,17 @@
     <script src="libs/spin.js/spin.min.js"></script>
     <script src="libs/Leaflet.Spin-1.1.0/leaflet.spin.min.js"></script>
 
+    <!-- Leaflet.locate -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.62.0/dist/L.Control.Locate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.62.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>    
+    
     <!-- Chart.js -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300" rel="stylesheet">    
+    
     <!-- CSS -->
     <link rel="stylesheet" href="style.css"/>
    
@@ -55,25 +63,31 @@
         
             <img class="img-titre" align="middle" src="img/logo-Air-PACA_small.png">
         
-            <h5>mes2camp</h5>
+            <!-- <h5>Campagnes</h5> -->
+            <h1>Historique des campagnes de mesures en Sud Provence-Alpes-Côte d’Azur</h1>
+            
+            <h4>Résultats annuels par polluants</h4><h5>Sélectionner un polluant</h5>
+            
             <a href="#" class="list-group-item active no2" id="no2">
-            NO₂
+            Mesures de dioxyde d’azote NO2
             <span class="glyphicon glyphicon-chevron-right"></span>
-            <span class="badge" id="raster_no2">AZUR</span>
+            <span class="badge" id="raster_no2">Carte 2017</span>
             </a>
 
             <a href="#" class="list-group-item pm10" id="pm10">
-            PM10
+            Mesures de particules PM10
             <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <span class="badge" id="raster_pm10">AZUR</span>
+            <span class="badge" id="raster_pm10">Carte 2017</span>
             </a>
 
             <a href="#" class="list-group-item pm25" id="pm25">
-            PM2.5
+            Mesures de particules PM2.5
             <span class="glyphicon hide glyphicon-chevron-right"></span>
             <!-- <span class="badge">Ready</span> -->
             </a>            
 
+            <h4>Campagnes : Informations sur les sites de mesure</h4><h5>Sélectionner la zone</h5>
+            
             <a href="#" class="list-group-item campagnes" id="campagnes">
             Campagnes
             <span class="glyphicon hide glyphicon-chevron-right"></span>
@@ -122,7 +136,8 @@ var no2 = {
     reset: function() {
         // restore initial values
         this.legendTitle = ["<strong>NO₂ moy.an</strong>"]
-    }
+    },
+    text_vl: "<font color='red'>Valeur Limite Européenne et Valeur Guide de l'OMS: 40 µg/m<sup>3</sup> en moyenne annuelle</font>"
 };
 
 var pm10 = {
@@ -130,8 +145,8 @@ var pm10 = {
     table: "prod.pm10_p904_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_compose, valeur, an_mesure, nom_campagne, annee_campagne", 
-    where: "WHERE valeur >= 0 AND an_mesure = 2016", 
+    fields: "id_point, adresse, nom_compose, valeur, an, nom_campagne, annee_campagne", 
+    where: "WHERE valeur >= 0 AND an = 2017", 
     onMap: false, 
     layerName: "pm10", 
     filter: 99999,
@@ -140,7 +155,8 @@ var pm10 = {
     reset: function() {
         // restore initial values
         this.legendTitle = ["<strong>PM10µ p90.4</strong>"]
-    }    
+    },
+    text_vl: "<font color='red'>Valeur Limite Européenne: 50 µg/m<sup>3</sup> pour le percentile 90.4 (36<sup>ème</sup> jour le plus pollué)</font>"    
 };
 
 var pm25 = {
@@ -148,8 +164,8 @@ var pm25 = {
     table: "prod.pm25_ma_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_compose, an_mesure, valeur, nom_campagne, annee_campagne", 
-    where: "WHERE valeur >= 0 AND an_mesure = 2016", 
+    fields: "id_point, adresse, nom_compose, an, valeur, nom_campagne, annee_campagne", 
+    where: "WHERE valeur >= 0 AND an = 2017", 
     onMap: false, 
     layerName: "pm25", 
     filter: 99999,
@@ -158,14 +174,16 @@ var pm25 = {
     reset: function() {
         // restore initial values
         this.legendTitle = ["<strong>PM2.5µ moy.an</strong>"]
-    }  
+    },
+    text_vl: "<font color='red'>Valeur Limite Européenne: 25 µg/m<sup>3</sup> en moyenne annuelle</br>Valeur Guide de l'OMS: 10 µg/m<sup>3</sup> en moyenne annuelle</font>"  
 };
 
 var campagnes = {
     table: "prod.points_campagne_v2017", 
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_campagne, color, annee_campagne, no2_ma, pm10_p904, pm25_ma", 
+    // fields: "id_point, adresse, nom_campagne, color, annee_campagne, rapport_url, case when no2_ma is true then 'Mesuré' else 'Non Mesuré' end as no2_ma, case when pm10_p904 is true then 'Mesuré' else 'Non Mesuré' end as pm10_p904, case when pm25_ma is true then 'Mesuré' else 'Non Mesuré' end as pm25_ma", 
+    fields: "id_point, adresse, nom_campagne, color, annee_campagne, rapport_url, no2_ma, pm10_p904, pm25_ma", 
     where: "WHERE id_point IS NOT NULL", 
     onMap: false, 
     layerName: "campagnes", 
@@ -190,6 +208,8 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
     */
     $('.list-group-item').click( function() {
 
+        sidebar.hide();
+    
         // Gestion de l'affichage des listes
         $(this).addClass('active').siblings().removeClass('active');
         $("a .glyphicon-chevron-right").addClass('hide');		
@@ -206,9 +226,18 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             if (!($(this)[0].id == alayer) && my_layers[alayer].options.format != "image/png"){    
                 map.removeLayer(my_layers[alayer]);
                 window[my_layers[alayer].options.name].onMap = false;
-            };           
+                
+                // Reset layers style
+                for (amarker in my_layers[alayer]._layers) {
+                    my_layers[alayer]._layers[amarker].setStyle({color: '#FFF', weight: 1});
+                };
+                
+                
+            };   
+
+            
         };	
-        // console.log("BBBB");        
+     
         my_layers[$(this)[0].id].addTo(map);
         window[my_layers[$(this)[0].id].options.name].onMap = true;
        
@@ -225,14 +254,18 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
         // Gestion des rasters en fonction de la couleur du badge
         if (($(this)[0].id == "no2")){
             map.removeLayer(my_layers["PM10_2016"]); 
-            if ($(this).find(".badge").css("background-color") == 'rgb(255, 255, 255)') {
+            // console.log($(this).find(".badge").css("background-color"));
+            if ($(this).find(".badge").css("background-color") == 'rgb(248, 185, 41)') {
+            // if ($(this).find(".badge").css("background-color") == 'rgb(250, 176, 7)') {
                 my_layers["NO2_2016"].addTo(map);
-            };
+            } ;
         } else if (($(this)[0].id == "pm10")){ 
             map.removeLayer(my_layers["NO2_2016"]); 
-            if ($(this).find(".badge").css("background-color") == 'rgb(255, 255, 255)') {
+            // console.log($(this).find(".badge").css("background-color"));
+            if ($(this).find(".badge").css("background-color") == 'rgb(248, 185, 41)') {
+            // if ($(this).find(".badge").css("background-color") == 'rgb(250, 176, 7)') {
                 my_layers["PM10_2016"].addTo(map);        
-            };
+            } ;
         } else {
             map.removeLayer(my_layers["NO2_2016"]);   
             map.removeLayer(my_layers["PM10_2016"]);            
@@ -249,7 +282,7 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
         */
         bg_color = $(this).css("background-color")
         
-        if (bg_color == 'rgb(250, 176, 7)' || bg_color == 'rgb(243, 213, 144)') {
+        if (bg_color == 'rgb(248, 185, 41)' || bg_color == 'rgb(243, 213, 144)') {
             
             // Is activé on désactive
             
@@ -264,7 +297,7 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             
             // Is déactivé on active
             
-            $(this).css('background-color','rgb(250, 176, 7)');
+            $(this).css('background-color','rgb(248, 185, 41)');
             
             if ($(this).attr("id") == "raster_no2"){
                 my_layers["NO2_2016"].addTo(map);
@@ -288,7 +321,7 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
             if ($(this).css("background-color") == 'rgb(189, 189, 189)' || $(this).css("background-color") == 'rgb(224, 224, 224)'){
                 $(this).css('background-color','#BDBDBD');
             } else {
-                $(this).css('background-color','#FAB007');
+                $(this).css('background-color','rgb(248, 185, 41)');
             };
         }
     );
@@ -307,7 +340,7 @@ $('.campagnes-select').change(function() /* Sélection liste déroulante campagn
 function createMap(){
     /* Création de la carte */
     var map = L.map('map', {layers: []}).setView([43.9, 6.0], 8);    
-    map.attributionControl.addAttribution('mes2camp &copy; <a href="http://www.airpaca.org/">Air PACA - 2017</a>');    
+    map.attributionControl.addAttribution('Campagnes &copy; <a href="http://www.atmosud.org/">AtmoSud - 2018</a>');    
 
     /* Chargement des fonds carto */    
     var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
@@ -319,8 +352,25 @@ function createMap(){
 
     // Prise en compte du click sur la carte 
     map.on('click', function(e)  {   
-        sidebar.hide();
+        sidebar.hide();  
+
+        // Reset layers style
+        // console.log(e);
+        // for (alayer in my_layers) { 
+            // if (!($(this)[0].id == alayer) && my_layers[alayer].options.format != "image/png"){    
+                // for (amarker in my_layers[alayer]._layers) {
+                    // my_layers[alayer]._layers[amarker].setStyle({color: '#FFF', weight: 1});
+                // };
+            // };
+        // };
+        
     });
+    
+    // map.on({
+        // zoomend: function() {
+            // map.panBy([150, 0]);
+        // }
+    // });    
     
     return map;
 };
@@ -730,7 +780,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                     if (layerName == "campagnes") {
                         return L.circleMarker(latlng, markerStyle).bindTooltip(feature.properties["nom_campagne"], {permanent: false, direction: 'top', opacity: 0.9});
                     } else {
-                        return L.circleMarker(latlng, markerStyle).bindTooltip(feature.properties["valeur"], {permanent: false, direction: 'top', opacity: 0.9});
+                        return L.circleMarker(latlng, markerStyle).bindTooltip(feature.properties["valeur"] + " µg/m<sup>3</sup>", {permanent: false, direction: 'top', opacity: 0.9});
                     };
  
                 },               
@@ -744,31 +794,72 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                 onEachFeature: function (feature, layer) {
                     
                     // Ajout d'un popup
+                    // var html = '<div id="popup">';
+                    // for (prop in feature.properties) {
+                        // html += "<b>" + prop + ':</b> ' + feature.properties[prop]+"<br>";
+                    // };
                     var html = '<div id="popup">';
-                    for (prop in feature.properties) {
-                        html += "<b>" + prop + ':</b> ' + feature.properties[prop]+"<br>";
-                    };
+                    html += "<b>Identifiant :</b> " + feature.properties["id_point"]+"<br>";
+                    // html += "<b>Adresse :</b> " + feature.properties["adresse"]+"<br>";
+                    if (feature.properties["adresse"] != "") {html += "<b>Adresse :</b> " + feature.properties["adresse"]+"<br>";};
+                    html += "<b>Composé :</b> " + feature.properties["nom_compose"]+"<br>";
+                    html += "<b>Dernière année disponible :</b> " + feature.properties["an"]+"<br>";
+                    html += "<b>Valeur :</b> " + feature.properties["valeur"]+" µg/m<sup>3</sup><br>";
 
                     // Ajout du lien vers la fonction de graphiques + passage arguments 
-                    if (['NO2', 'PM10 corrige', 'PM2.5 corrige'].indexOf(feature.properties["nom_compose"]) >= 0) {
-                        html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_compose"] +'\')">Voir Toutes les mesures</a></div>';
-                    };
+                    // if (['NO2', 'PM10 corrige', 'PM2.5 corrige'].indexOf(feature.properties["nom_compose"]) >= 0) {
+                        // html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_compose"] +'\')">Voir Toutes les mesures</a></div>';
+                        // html += '<div class="show-graph"><a href="#" onclick="graphiques(' + feature.properties["id_point"] + ',\'' + feature.properties["nom_compose"] +'\')">Voir Toutes les mesures</a></div>';
+                    // };
                     
-                    html += "</div>";
-                    layer.bindPopup(html);
+                    html += "</div>";                    
+                    
+                    
+                    
+                    
+                    
+                    // -- Traitement spécifique de l'info bulle
+                    if (layerName == "campagnes") {
+                        // console.log(feature.properties["rapport_url"]);
+                        if (feature.properties["adresse"] != "") {adresse = '</br><b>Adresse:</b> '+feature.properties["adresse"]} else {adresse = ""};
+                        if (feature.properties["rapport_url"] != null) {rapport = '</br></br><a target="_blank" rel="noopener noreferrer" href="'+feature.properties["rapport_url"]+'">Consulter le rapport d\'étude</a>'} else {rapport = ""};
+                        html_campagnes = '<div id="popup"><b>Nom Campagne:</b> ' + feature.properties["nom_campagne"] + adresse +'</br><b>Année:</b> '+feature.properties["annee_campagne"]+'</br><b>NO2:</b> '+feature.properties["no2_ma"]+'</br><b>PM10:</b> '+feature.properties["pm10_p904"]+'</br><b>PM2.5:</b> '+feature.properties["pm25_ma"]+'</br></br>Id Point: '+feature.properties["id_point"]+rapport+'</div>' 
+                        layer.bindPopup(html_campagnes);                        
+                    // } else {
+                        // layer.bindPopup(feature.properties["valeur"]);
+                    };
+
 
                     // Prise en compte du hover
-                    layer.on('mouseover', function(){
-                        layer.setStyle({color: '#FFF', weight: 3});
-                    });
-                    layer.on('mouseout', function(){
-                        layer.setStyle({color: "#FFF",weight: 1});
-                    });
+                    // layer.on('mouseover', function(){
+                        // layer.setStyle({color: '#FFF', weight: 3});
+                    // });
+                    // layer.on('mouseout', function(){
+                        // layer.setStyle({color: "#FFF",weight: 1});
+                    // });
 
                     // Prise en compte du cklic
                     layer.on('click', function(){
-                        sidebar.hide();
-                    });                    
+                        if (layerName == "campagnes") {
+                            sidebar.hide();
+                        } else {
+                            
+                            // Zoom
+                            // map.setView(layer.getLatLng(),map.getZoom());
+                            var targetPoint = map.project(layer.getLatLng(),map.getZoom()).subtract([-750 / 2, 0]),
+                            targetLatLng = map.unproject(targetPoint, map.getZoom());
+                            map.setView(targetLatLng, map.getZoom());
+    
+                            // Surbrillance du pointe de mesure sélectionné
+                            for (alayer in my_layers[layerName]._layers) {
+                                my_layers[layerName]._layers[alayer].setStyle({color: '#FFF', weight: 1});
+                            };
+                            layer.setStyle({color: '#FFF', weight: 3});
+
+                            // Affiche les données
+                            graphiques(feature.properties["id_point"],feature.properties["nom_compose"],html);
+                        };
+                    });  
 
                 },
             });
@@ -847,15 +938,15 @@ function create_sidebar(){
     var sidebar = L.control.sidebar('sidebar', {
         closeButton: true,
         position: 'right',
-        autoPan: true,
+        autoPan: false,
     });
 
     // Modification de le fonction show de la sidebar.
     sidebar.show = function () {
         // RS ADD - Always Pan on show()
-        this._map.panBy([-this.getOffset() / 2, 0], {
-            duration: 0.5
-        });
+        // this._map.panBy([-this.getOffset() / 2, 0], {
+            // duration: 0.5
+        // });
         // ---
 
         if (!this.isVisible()) {
@@ -873,10 +964,10 @@ function create_sidebar(){
     return sidebar;
 };
 
-function graphiques(id_point, nom_polluant){
+function graphiques(id_point, nom_polluant, html){
     
-    sidebar.hide();
-
+    // sidebar.hide();
+    
     // Définition de l'id_polluant en fonction de son nom
     if (nom_polluant == 'NO2'){
         id_polluant = no2.id_compose;
@@ -884,6 +975,8 @@ function graphiques(id_point, nom_polluant){
         id_polluant = pm10.id_compose;
     } else if (nom_polluant == 'PM2.5 corrige') {
         id_polluant = pm25.id_compose;
+    } else {
+        id_polluant = "None";
     };
 
      // Requête AJAX pour récupérer les mesures
@@ -906,12 +999,38 @@ function graphiques(id_point, nom_polluant){
                           
             // Ne crée le graphique que si la requête a retournée un résultat
             if (typeof response[0] !== "undefined") {
-                
+
+                // Ligne horizontale de valeur limite   https://stackoverflow.com/questions/39293816/how-to-draw-horizontal-line-on-bar-chart-chartjs 
+                Chart.pluginService.register({
+                    afterDraw: function(chart) {
+                        if (typeof chart.config.options.lineAt != 'undefined') {
+                            var lineAt = chart.config.options.lineAt;
+                            var ctxPlugin = chart.chart.ctx;
+                            var xAxe = chart.scales[chart.config.options.scales.xAxes[0].id];
+                            var yAxe = chart.scales[chart.config.options.scales.yAxes[0].id];
+                            
+                            // I'm not good at maths
+                            // So I couldn't find a way to make it work ...
+                            // ... without having the `min` property set to 0
+                            if(yAxe.min != 0) return;
+
+                            ctxPlugin.strokeStyle = "red";
+                            ctxPlugin.beginPath();
+                            lineAt = (lineAt - yAxe.min) * (100 / yAxe.max);
+                            lineAt = (100 - lineAt) / 100 * (yAxe.height) + yAxe.top;
+                            ctxPlugin.moveTo(xAxe.left, lineAt);
+                            ctxPlugin.lineTo(xAxe.right, lineAt);
+                            ctxPlugin.stroke();
+                        }
+                    }
+                });  
+            
                 // Graphiques NO2
                 if (jqXHR.id_polluant == no2.id_compose) {
-                    
+
                     // Prépare le ou les élément(s) HTML du graph
-                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Mesure</font><br><font color="orange">Régression Linéaire</font>');                      
+                    // sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Mesure</font><br><font color="orange">Données Reconstituées</font>');                      
+                    sidebar.setContent('<h2>Informations</h2><h3>' + html + '</h3>' + '<h2>Moyenne annuelle dioxyde d\'azote</h2><canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Données Mesurées</font><br><font color="orange">Données Reconstituées</font></br></br><p>'+no2.text_vl+'</p>');                      
                     
                     var graph_labels = [];
                     for (var i in response) {
@@ -919,6 +1038,8 @@ function graphiques(id_point, nom_polluant){
                     };              
                     
                     var graph_title = 'Valeurs mesurées ou estimées';
+                    
+                    
                     
                     var graph_data = [];
                     for (var i in response) {
@@ -951,6 +1072,7 @@ function graphiques(id_point, nom_polluant){
                             }]
                         },
                         options: {
+                            lineAt: 39,
                             title: {
                                 display: false,
                                 fontSize: 20,
@@ -973,18 +1095,20 @@ function graphiques(id_point, nom_polluant){
                     });
                 };
 
+                
                 // Graphiques PM10
                 if (jqXHR.id_polluant == pm10.id_compose) {
                     
                     // Prépare le ou les élément(s) HTML du graph
-                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
+                    // sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Données Mesurées</font><br><font color="orange">Données Reconstituées</font>');                      
+                    sidebar.setContent('<h2>Informations</h2><h3>' + html + '</h3>' + '<h2>36<sup>ème</sup> jour le plus pollué, particules fines PM10</h2><canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Données Mesurées</font><br><font color="orange">Données Reconstituées</font></br></br><p>'+pm10.text_vl+'</p>');                      
                                         
                     var graph_labels = [];
                     for (var i in response) {
-                        graph_labels.push(response[i].an_mesure);
+                        graph_labels.push(response[i].an);
                     };              
                     
-                    var graph_title = 'Sites permanents ou stations virtuelles';
+                    var graph_title = 'Données Mesurées ou stations virtuelles';
                     
                     var graph_data = [];
                     for (var i in response) {
@@ -994,7 +1118,7 @@ function graphiques(id_point, nom_polluant){
                     var bg_colors = [];
                     var bd_colors = [];
                     for (var i in response) {
-                        if (response[i].nom_campagne == "Stations virtuelles") {
+                        if (response[i].nom_campagne == "Sites modélisés") {
                             bg_colors.push('rgba(255, 206, 86, 0.8)');
                             bd_colors.push('rgba(255, 206, 86, 0.8)');
                         } else {
@@ -1017,6 +1141,7 @@ function graphiques(id_point, nom_polluant){
                             }]
                         },
                         options: {
+                            lineAt: 49,
                             title: {
                                 display: false,
                                 fontSize: 20,
@@ -1043,14 +1168,14 @@ function graphiques(id_point, nom_polluant){
                 if (jqXHR.id_polluant == pm25.id_compose) {
                     
                     // Prépare le ou les élément(s) HTML du graph
-                    sidebar.setContent('<h4>Mesures de ' + nom_polluant + ' point ' + id_point + '</h4>' + '<canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Sites permanents</font><br><font color="orange">Stations virtuelles</font>');                      
+                    sidebar.setContent('<h2>Informations</h2><h3>' + html + '</h3>' + '<h2>Moyenne annuelle particules fines PM2.5</h2><canvas id="graph" width="600" height="350"></canvas><br><font color="blue">Données Mesurées</font><br><font color="orange">Données Reconstituées</font></br></br><p>'+pm25.text_vl+'</p>');                      
                                         
                     var graph_labels = [];
                     for (var i in response) {
-                        graph_labels.push(response[i].an_mesure);
+                        graph_labels.push(response[i].an);
                     };              
                     
-                    var graph_title = 'Sites permanents ou stations virtuelles';
+                    var graph_title = 'Données Mesurées ou stations virtuelles';
                     
                     var graph_data = [];
                     for (var i in response) {
@@ -1060,7 +1185,7 @@ function graphiques(id_point, nom_polluant){
                     var bg_colors = [];
                     var bd_colors = [];
                     for (var i in response) {
-                        if (response[i].nom_campagne == "Stations virtuelles") {
+                        if (response[i].nom_campagne == "Sites modélisés") {
                             bg_colors.push('rgba(255, 206, 86, 0.8)');
                             bd_colors.push('rgba(255, 206, 86, 0.8)');
                         } else {
@@ -1083,6 +1208,7 @@ function graphiques(id_point, nom_polluant){
                             }]
                         },
                         options: {
+                            lineAt: 9.5,
                             title: {
                                 display: false,
                                 fontSize: 20,
@@ -1110,21 +1236,22 @@ function graphiques(id_point, nom_polluant){
             };
     
             // Affiche la sidebar et le graphique qu'elle contient
-            sidebar.show();
-    
+            if (id_polluant != "None") {
+                sidebar.show();
+            };
         }
     }); 
 };    
 
-function get_raster_layers(){
+function get_raster_layers_DELETE(){
     /* 
     Récupération des rasters de mod urbaine.
     ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
     */
-    var wms_address = "http://172.16.13.182/cgi-bin/mapserv?map=/home/airpaca/web/mes2camp.dev/mes2camp/src/web_app/serveur_airpaca.map" //
+    var wms_address = "http://5.39.86.180/cgi-bin/mapserv?map=/home/rhum/projets/mes2camp/src/web_app/serveur_airpaca.map" //
     var wms_format = 'image/png';
     var wms_tr = true;
-    var wms_attrib = "Air PACA";
+    var wms_attrib = "AtmoSud";
     var alpha_conc = 0.5; // opacity of concentration layers    
     
     my_layers["NO2_2016"] = L.tileLayer.wms(wms_address, {
@@ -1150,6 +1277,40 @@ function get_raster_layers(){
     my_layers["NO2_2016"].addTo(map);   
 };
 
+function get_raster_layers(){
+    /* 
+    Récupération des rasters de mod urbaine.
+    ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
+    */
+    var wms_address = "http://geoservices.atmosud.org/geoserver/wms?" 
+    var wms_format = 'image/png';
+    var wms_tr = true;
+    var wms_attrib = "AtmoSud";
+    var alpha_conc = 0.5; // opacity of concentration layers    
+    
+    my_layers["NO2_2016"] = L.tileLayer.wms(wms_address, {
+        name: 'NO2_2016',
+        layers: 'mod_sudpaca_no2_moyan:mod_sudpaca_no2_2017_moyan',
+        format: wms_format,
+        transparent: wms_tr,
+        opacity: alpha_conc,
+        dj: 0,
+        subtitle: "Moyenne annuelle NO<sub>2</sub> de l'ann&eacute;e 2016"
+    });
+    
+    my_layers["PM10_2016"] = L.tileLayer.wms(wms_address, {
+        name: 'PM10_2016',
+        layers: 'mod_sudpaca_pm10_p90j:mod_sudpaca_pm10_2017_p90j',
+        format: wms_format,
+        transparent: wms_tr,
+        opacity: alpha_conc,
+        dj: 0,
+        subtitle: "Percentile 90.4 PM10 de l'ann&eacute;e 2016"
+    });  
+
+    my_layers["NO2_2016"].addTo(map);   
+};
+
 /*
 Appel des fonctions
 */
@@ -1161,7 +1322,17 @@ get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm1
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
 get_raster_layers();
+
+
+// Add geoloc control and launch it.
+// FIXME: Must use SSL
+// var lc = L.control.locate({drawCircle: false, drawMarker: false}).addTo(map);
+// lc.start();
+
 </script>
 
 </body>
 </html>
+
+
+ 

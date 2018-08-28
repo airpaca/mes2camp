@@ -1,11 +1,11 @@
 <?php 
 
 /* Chargement du fichier de config en fonction de l'utilisateur */
-if ($user == "admin") {
-    include 'config_su.php';
-} else {
+// if ($user == "admin") {
+    // include 'config_su.php';
+// } else {
     include 'config.php';
-}
+// }
 
 /* Récupération des données */
 $id_point = $_GET['id_point'];
@@ -30,27 +30,27 @@ if ($id_polluant == 189) {
 } elseif ($id_polluant == 125) {
     $sql = "   
     select 
-        id_point, nom_compose, an_mesure, valeur::int, 
+        id_point, nom_compose, an, valeur::int, 
         case when 
             nom_campagne in ('UNIPER', 'Monaco stations') then 'Sites permanents' 
             else nom_campagne 
         end as nom_campagne    
     from prod.pm10_p904_v2017
     where id_point = " . $id_point . "
-    order by id_point, nom_compose, an_mesure, nom_campagne
+    order by id_point, nom_compose, an, nom_campagne
     ;    
     "; 
 } elseif ($id_polluant == 270) {
     $sql = "   
     select 
-        id_point, nom_compose, an_mesure, valeur::int, 
+        id_point, nom_compose, an, valeur::int, 
         case when 
             nom_campagne in ('UNIPER', 'Monaco stations') then 'Sites permanents' 
             else nom_campagne 
         end as nom_campagne    
     from prod.pm25_ma_v2017
     where id_point = " . $id_point . "
-    order by id_point, nom_compose, an_mesure, nom_campagne
+    order by id_point, nom_compose, an, nom_campagne
     ;    
     ";     
 }
