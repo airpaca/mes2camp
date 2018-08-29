@@ -8,6 +8,12 @@
     NOTE: Pour le NO2 filtre sur val_memo, pour PM10 filtre sur station virtuelle/permanente
     NOTE: Faire un code propre avec https://blog.webkid.io/rarely-used-leaflet-features/
     TODO: Faire les mesures PM10 (table différente de celle du NO2)
+    
+    
+    
+    
+    https://www.bootply.com/86329
+    
     -->
 
     <meta charset="utf-8">
@@ -56,60 +62,70 @@
 ------------------------------------------------------------------------------->
 <body>
 
-<!-- ......... Side bar -->
-<div id="container">
-    <div id="sidebar-left">
-        <div class="list-group">
-        
-            <img class="img-titre" align="middle" src="img/logo-Air-PACA_small.png">
-        
-            <!-- <h5>Campagnes</h5> -->
-            <h1>Historique des campagnes de mesures en Sud Provence-Alpes-Côte d’Azur</h1>
-            
-            <h4>Résultats annuels par polluants</h4><h5>Sélectionner un polluant</h5>
-            
-            <a href="#" class="list-group-item active no2" id="no2">
-            Mesures de dioxyde d’azote NO2
-            <span class="glyphicon glyphicon-chevron-right"></span>
-            <span class="badge" id="raster_no2">Carte 2017</span>
-            </a>
+<div class="container">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-sm-3">
 
-            <a href="#" class="list-group-item pm10" id="pm10">
-            Mesures de particules PM10
-            <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <span class="badge" id="raster_pm10">Carte 2017</span>
-            </a>
-
-            <a href="#" class="list-group-item pm25" id="pm25">
-            Mesures de particules PM2.5
-            <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <!-- <span class="badge">Ready</span> -->
-            </a>            
-
-            <h4>Campagnes : Informations sur les sites de mesure</h4><h5>Sélectionner la zone</h5>
             
-            <a href="#" class="list-group-item campagnes" id="campagnes">
-            Campagnes
-            <span class="glyphicon hide glyphicon-chevron-right"></span>
-            <!-- <span class="badge">Ready</span> -->
-            </a>  
+                <div class="list-group">
+                
+                    <img class="img-titre" align="middle" src="img/logo-Air-PACA_small.png">
+                
+                    <!-- <h5>Campagnes</h5> -->
+                    <h1>Historique des campagnes de mesures en Sud Provence-Alpes-Côte d’Azur</h1>
+                    
+                    <h4>Résultats annuels par polluants</h4><h5>Sélectionner un polluant</h5>
+                    
+                    <a href="#" class="list-group-item active no2" id="no2">
+                    Mesures de dioxyde d’azote NO2
+                    <!-- <span class="glyphicon glyphicon-chevron-right"></span> -->
+                    <span class="badge" id="raster_no2">Carte 2017</span>
+                    </a>
+
+                    <a href="#" class="list-group-item pm10" id="pm10">
+                    Mesures de particules PM10
+                    <!-- <span class="glyphicon hide glyphicon-chevron-right"></span> -->
+                    <span class="badge" id="raster_pm10">Carte 2017</span>
+                    </a>
+
+                    <a href="#" class="list-group-item pm25" id="pm25">
+                    Mesures de particules PM2.5
+                    <!-- <span class="glyphicon hide glyphicon-chevron-right"></span>
+                    <span class="badge">Ready</span> -->
+                    </a>            
+
+                    <h4>Campagnes : Informations sur les sites de mesure</h4><h5>Sélectionner la zone</h5>
+                    
+                    <a href="#" class="list-group-item campagnes" id="campagnes">
+                    Campagnes
+                    <!-- <span class="glyphicon hide glyphicon-chevron-right"></span>
+                    <span class="badge">Ready</span> -->
+                    </a>  
+                    
+                    </a>
+                </div>
+                
+                <select class="form-control campagnes-select hidden"></select>        
             
-            </a>
-        </div>
-        
-        <select class="form-control campagnes-select hidden"></select>  
-        
-    </div>
-    <!-- Leaflet sidebar -->
-    <div id="sidebar">
-        <h1>leaflet-sidebar</h1>
-    </div>    
-    
-    <!-- Element carte -->
-    <div id="map"></div>
-    
-    
-</div>
+            
+            </div>
+            <div class="col-sm-9">
+
+            
+                <!-- leaflet.sidebar -->
+                <div id="sidebar">
+                    <h1>leaflet-sidebar</h1>
+                </div>             
+            
+                <!-- Element carte -->
+                <div id="map"></div> 
+            
+            
+            </div>
+        </div>  <!-- row -->
+    </div> <!-- col md 12 -->
+</div> <!-- Container -->
 
 <!------------------------------------------------------------------------------ 
                                     Map script
@@ -212,8 +228,8 @@ $(function() /* Ecoute des actions de l'utilisateur*/ {
     
         // Gestion de l'affichage des listes
         $(this).addClass('active').siblings().removeClass('active');
-        $("a .glyphicon-chevron-right").addClass('hide');		
-        $("#" + $(this)[0].id + " .glyphicon-chevron-right").removeClass('hide');
+        // $("a .glyphicon-chevron-right").addClass('hide');		
+        // $("#" + $(this)[0].id + " .glyphicon-chevron-right").removeClass('hide');
 
         // Gestion de l'affichage des couches
         for (alayer in my_layers) { 
@@ -846,7 +862,8 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                             
                             // Zoom
                             // map.setView(layer.getLatLng(),map.getZoom());
-                            var targetPoint = map.project(layer.getLatLng(),map.getZoom()).subtract([-750 / 2, 0]),
+                            // var targetPoint = map.project(layer.getLatLng(),map.getZoom()).subtract([-750 / 2, 0]),
+                            var targetPoint = map.project(layer.getLatLng(),map.getZoom()).subtract(substraction),
                             targetLatLng = map.unproject(targetPoint, map.getZoom());
                             map.setView(targetLatLng, map.getZoom());
     
@@ -1314,6 +1331,11 @@ function get_raster_layers(){
 /*
 Appel des fonctions
 */
+
+
+
+
+
 var map = createMap();
 var sidebar = create_sidebar();
 populate_campagnes();
@@ -1322,6 +1344,20 @@ get_postgis_layer(pm10.table, pm10.geom, pm10.srid, pm10.fields, pm10.where, pm1
 get_postgis_layer(pm25.table, pm25.geom, pm25.srid, pm25.fields, pm25.where, pm25.onMap, pm25.layerName, pm25.filter);
 get_postgis_layer(campagnes.table, campagnes.geom, campagnes.srid, campagnes.fields, campagnes.where, campagnes.onMap, campagnes.layerName, campagnes.filter);
 get_raster_layers();
+
+
+// Taille du média
+function myMediaFunction(x) {
+    if (x.matches) { // If media query matches
+        substraction = [0, 0];
+    } else {
+        substraction = [-750 / 2, 0];
+    }
+}
+var x = window.matchMedia("(max-width: 800px)")
+myMediaFunction(x) // Call listener function at run time
+x.addListener(myMediaFunction) // Attach listener function on state changes
+
 
 
 // Add geoloc control and launch it.
