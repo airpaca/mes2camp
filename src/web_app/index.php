@@ -126,7 +126,7 @@ var no2 = {
     table: "prod.no2_ma_2016_v2017", 
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_compose, an, valeur, val_memo, an_source", 
+    fields: "id_point, adresse, nom_compose, nom_compose2, an, valeur, val_memo, an_source", 
     where: "WHERE valeur >= 0", 
     onMap: true, 
     layerName: "no2", 
@@ -135,7 +135,7 @@ var no2 = {
     legendTitle: ["<strong>NO₂ moy.an</strong>"], 
     reset: function() {
         // restore initial values
-        this.legendTitle = ["<strong>NO₂ moy.an</strong>"]
+        this.legendTitle = ["<strong>NO₂ µg/m<sup>3</strong></sup></br>moyenne annuelle</br>"]
     },
     text_vl: "<font color='red'>Valeur Limite Européenne et Valeur Guide de l'OMS: 40 µg/m<sup>3</sup> en moyenne annuelle</font>"
 };
@@ -145,7 +145,7 @@ var pm10 = {
     table: "prod.pm10_p904_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_compose, valeur, an, nom_campagne, annee_campagne", 
+    fields: "id_point, adresse, nom_compose, nom_compose2, valeur, an, nom_campagne, annee_campagne", 
     where: "WHERE valeur >= 0 AND an = 2017", 
     onMap: false, 
     layerName: "pm10", 
@@ -154,7 +154,7 @@ var pm10 = {
     legendTitle: ["<strong>PM10µ p90.4</strong>"],
     reset: function() {
         // restore initial values
-        this.legendTitle = ["<strong>PM10µ p90.4</strong>"]
+        this.legendTitle = ["<strong>PM10 µg/m<sup>3</strong></sup></br>36<sup>ème</sup> jour le plus pollué</br>"]
     },
     text_vl: "<font color='red'>Valeur Limite Européenne: 50 µg/m<sup>3</sup> pour le percentile 90.4 (36<sup>ème</sup> jour le plus pollué)</font>"    
 };
@@ -164,7 +164,7 @@ var pm25 = {
     table: "prod.pm25_ma_v2017",
     geom: "geom", 
     srid: "4326", 
-    fields: "id_point, adresse, nom_compose, an, valeur, nom_campagne, annee_campagne", 
+    fields: "id_point, adresse, nom_compose, nom_compose2, an, valeur, nom_campagne, annee_campagne", 
     where: "WHERE valeur >= 0 AND an = 2017", 
     onMap: false, 
     layerName: "pm25", 
@@ -173,7 +173,7 @@ var pm25 = {
     legendTitle: ["<strong>PM2.5µ moy.an</strong>"],
     reset: function() {
         // restore initial values
-        this.legendTitle = ["<strong>PM2.5µ moy.an</strong>"]
+        this.legendTitle = ["<strong>PM2.5 µg/m<sup>3</strong></sup></br>moyenne annuelle</br>"]
     },
     text_vl: "<font color='red'>Valeur Limite Européenne: 25 µg/m<sup>3</sup> en moyenne annuelle</br>Valeur Guide de l'OMS: 10 µg/m<sup>3</sup> en moyenne annuelle</font>"  
 };
@@ -802,7 +802,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                     html += "<b>Identifiant :</b> " + feature.properties["id_point"]+"<br>";
                     // html += "<b>Adresse :</b> " + feature.properties["adresse"]+"<br>";
                     if (feature.properties["adresse"] != "") {html += "<b>Adresse :</b> " + feature.properties["adresse"]+"<br>";};
-                    html += "<b>Composé :</b> " + feature.properties["nom_compose"]+"<br>";
+                    html += "<b>Composé :</b> " + feature.properties["nom_compose2"]+"<br>";
                     html += "<b>Dernière année disponible :</b> " + feature.properties["an"]+"<br>";
                     html += "<b>Valeur :</b> " + feature.properties["valeur"]+" µg/m<sup>3</sup><br>";
 
