@@ -30,9 +30,11 @@ html,body,.col-md-12,.row {
 
 
 
-.img-titre{
-    margin-top: 5%;    
-    margin-left: 25%; 
+.img-titre{   
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%; 
 }
 
 #sidebar-left{
