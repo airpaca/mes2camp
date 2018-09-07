@@ -79,7 +79,7 @@
                     <h4>Résultats annuels par polluants</h4><h5>Sélectionner un polluant</h5>
                     
                     <a href="#" class="list-group-item active no2" id="no2">
-                    Mesures de dioxyde d’azote NO2
+                    Mesures de dioxyde d’azote NO<sub>2</sub>  
                     <!-- <span class="glyphicon glyphicon-chevron-right"></span> -->
                     <span class="badge" id="raster_no2">Carte 2017</span>
                     </a>
@@ -840,7 +840,7 @@ function get_postgis_layer(table, geom, srid, fields, where, onMap, layerName, f
                         // console.log(feature.properties["rapport_url"]);
                         if (feature.properties["adresse"] != "") {adresse = '</br><b>Adresse:</b> '+feature.properties["adresse"]} else {adresse = ""};
                         if (feature.properties["rapport_url"] != null) {rapport = '</br></br><a target="_blank" rel="noopener noreferrer" href="'+feature.properties["rapport_url"]+'">Consulter le rapport d\'étude</a>'} else {rapport = ""};
-                        html_campagnes = '<div id="popup"><b>Nom Campagne:</b> ' + feature.properties["nom_campagne"] + adresse +'</br><b>Année:</b> '+feature.properties["annee_campagne"]+'</br><b>NO2:</b> '+feature.properties["no2_ma"]+'</br><b>PM10:</b> '+feature.properties["pm10_p904"]+'</br><b>PM2.5:</b> '+feature.properties["pm25_ma"]+'</br></br>Id Point: '+feature.properties["id_point"]+rapport+'</div>' 
+                        html_campagnes = '<div id="popup"><b>Nom Campagne:</b> ' + feature.properties["nom_campagne"] + adresse +'</br><b>Année:</b> '+feature.properties["annee_campagne"]+'</br><b>NO<sub>2</sub>:</b> '+feature.properties["no2_ma"]+'</br><b>PM10:</b> '+feature.properties["pm10_p904"]+'</br><b>PM2.5:</b> '+feature.properties["pm25_ma"]+'</br></br>Id Point: '+feature.properties["id_point"]+rapport+'</div>' 
                         layer.bindPopup(html_campagnes);                        
                     // } else {
                         // layer.bindPopup(feature.properties["valeur"]);
@@ -1313,7 +1313,7 @@ function get_raster_layers(){
         transparent: wms_tr,
         opacity: alpha_conc,
         dj: 0,
-        subtitle: "Moyenne annuelle NO<sub>2</sub> de l'ann&eacute;e 2016"
+        subtitle: "Moyenne annuelle NO<sub>2</sub> de l'ann&eacute;e 2017"
     });
     
     my_layers["PM10_2016"] = L.tileLayer.wms(wms_address, {
@@ -1323,7 +1323,7 @@ function get_raster_layers(){
         transparent: wms_tr,
         opacity: alpha_conc,
         dj: 0,
-        subtitle: "Percentile 90.4 PM10 de l'ann&eacute;e 2016"
+        subtitle: "Percentile 90.4 PM10 de l'ann&eacute;e 2017"
     });  
 
     my_layers["NO2_2016"].addTo(map);   
