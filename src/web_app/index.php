@@ -1308,7 +1308,7 @@ function get_raster_layers(){
     
     my_layers["NO2_2016"] = L.tileLayer.wms(wms_address, {
         name: 'NO2_2016',
-        layers: 'mod_sudpaca_no2_moyan:mod_sudpaca_no2_2017_moyan',
+        layers: 'mod_sudpaca_2017:mod_sudpaca_2017_no2_moyan',
         format: wms_format,
         transparent: wms_tr,
         opacity: alpha_conc,
@@ -1318,7 +1318,7 @@ function get_raster_layers(){
     
     my_layers["PM10_2016"] = L.tileLayer.wms(wms_address, {
         name: 'PM10_2016',
-        layers: 'mod_sudpaca_pm10_p90j:mod_sudpaca_pm10_2017_p90j',
+        layers: 'mod_sudpaca_2017:mod_sudpaca_2017_pm10_p90j',
         format: wms_format,
         transparent: wms_tr,
         opacity: alpha_conc,
