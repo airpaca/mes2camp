@@ -3,8 +3,6 @@
 <head>
 
     <!-- 
-    NOTE: Bon lien pour création légende et colorramp: 
-          http://jsfiddle.net/nathansnider/oguh5t94/
     NOTE: Pour le NO2 filtre sur val_memo, pour PM10 filtre sur station virtuelle/permanente
     NOTE: Faire un code propre avec https://blog.webkid.io/rarely-used-leaflet-features/
     TODO: Faire les mesures PM10 (table différente de celle du NO2)
@@ -360,10 +358,12 @@ function createMap(){
     map.attributionControl.addAttribution('Campagnes &copy; <a href="http://www.atmosud.org/">AtmoSud - 2018</a>');    
 
     /* Chargement des fonds carto */    
-    var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    // var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    var Hydda_Full = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         opacity: 0.5,
-        attribution: 'Fond de carte &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        // attribution: 'Fond de carte &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: 'Fond de carte &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
     Hydda_Full.addTo(map);
 
@@ -1266,7 +1266,8 @@ function get_raster_layers_DELETE(){
     Récupération des rasters de mod urbaine.
     ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
     */
-    var wms_address = "http://5.39.86.180/cgi-bin/mapserv?map=/home/rhum/projets/mes2camp/src/web_app/serveur_airpaca.map" //
+    // var wms_address = "http://5.39.86.180/cgi-bin/mapserv?map=/home/rhum/projets/mes2camp/src/web_app/serveur_airpaca.map" 
+    var wms_address = "https://5.39.86.180/cgi-bin/mapserv?map=/home/rhum/projets/mes2camp/src/web_app/serveur_airpaca.map" 
     var wms_format = 'image/png';
     var wms_tr = true;
     var wms_attrib = "AtmoSud";
@@ -1300,7 +1301,8 @@ function get_raster_layers(){
     Récupération des rasters de mod urbaine.
     ! Pour l'instant à partir d'un mapserver sur une autre machine (vmli-grass)
     */
-    var wms_address = "http://geoservices.atmosud.org/geoserver/wms?" 
+    // var wms_address = "http://geoservices.atmosud.org/geoserver/wms?" 
+    var wms_address = "https://geoservices.atmosud.org/geoserver/wms?" 
     var wms_format = 'image/png';
     var wms_tr = true;
     var wms_attrib = "AtmoSud";
